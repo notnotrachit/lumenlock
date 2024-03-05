@@ -16,13 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from wallet.views import home, create_wallet, check_balance, send_money
+from wallet.views import home, create_wallet, check_balance, send_money, dashboard
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', home),
-    path('create_wallet', create_wallet),
+    path('create_wallet', create_wallet, name='create_wallet'),
     path('check_balance', check_balance),
-    path('send_money', send_money)
+    path('send_money', send_money, name='send_tokens'),
+    path('dashboard', dashboard, name='dashboard')
 ]

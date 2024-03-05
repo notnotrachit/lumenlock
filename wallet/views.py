@@ -6,18 +6,21 @@ import cryptocode
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 import requests
-
-
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+import json
 
 def home(request):
     return render(request, 'home.html')
 
-
+@login_required
 def create_wallet(request):
+    if Wallet.objects.filter(user=request.user).exists():
+        return redirect('dashboard')
     keypair = Keypair.random()
     print("Public Key: " + keypair.public_key)
     print("Secret Seed: " + keypair.secret)
-    encryption_key = "Hello"
+    encryption_key = request.POST.get('password')
     encrypted_secret_seed = keypair.secret
     encrypted_secret_seed = cryptocode.encrypt(keypair.secret, encryption_key)
     wallet = Wallet.objects.create(
@@ -27,25 +30,27 @@ def create_wallet(request):
     )
     url = "https://friendbot.stellar.org"
     response = requests.get(url, params={"addr": keypair.public_key})
-    return JsonResponse({'public_key': keypair.public_key, 'secret_seed': keypair.secret})
+    return redirect('dashboard')
 
-@csrf_exempt
+
 def check_balance(request):
     public_key = request.POST.get('public_key')
-    print(public_key)
+    if not public_key:
+        wallet = Wallet.objects.filter(user=request.user)[0]
+        public_key = wallet.public_key
     server = Server("https://horizon-testnet.stellar.org")
     account = server.accounts().account_id(public_key).call()
     return JsonResponse({'balance': account['balances'][0]['balance']})
 
 
-
-@csrf_exempt
+@login_required
 def send_money(request):
     if request.method == 'POST':
-        destination_public_key = request.POST.get('destination_public_key')
-        amount = request.POST.get('amount')
-        encryption_key = request.POST.get('encryption_key')
-        wallet = Wallet.objects.filter(user=User.objects.first())[1]
+        data = json.loads(request.body)
+        destination_public_key = data.get('recipient')
+        amount = data.get('amount')
+        encryption_key = data.get('transaction_password')
+        wallet = Wallet.objects.filter(user=request.user)[0]
         server = Server("https://horizon-testnet.stellar.org")
         source_keypair = Keypair.from_secret(cryptocode.decrypt(wallet.secret_seed, encryption_key))
         destination_account = server.load_account(destination_public_key)
@@ -60,7 +65,22 @@ def send_money(request):
         ).set_timeout(30).build()
         transaction.sign(source_keypair)
         response = server.submit_transaction(transaction)
-        print(response)
-        return JsonResponse({'message': 'Payment sent successfully'})
+        return JsonResponse({'message': 'Payment sent successfully', 'status': 'success'})
     else:
         pass
+
+
+@login_required
+def dashboard(request):
+    wallet_exists = Wallet.objects.filter(user=request.user).exists()
+    if not wallet_exists:
+        return render(request, 'dashboard.html', {'wallet_exists': wallet_exists})
+    wallet = Wallet.objects.filter(user=request.user)[0]
+    server = Server("https://horizon-testnet.stellar.org")
+    account = server.accounts().account_id(wallet.public_key).call()
+    balance = account['balances'][0]['balance']
+    context = {
+        'wallet_exists': wallet_exists,
+        'balance': balance,
+    }
+    return render(request, 'dashboard.html', context)
