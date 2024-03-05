@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block main %}
+  <header class="bg-blue-500 text-white py-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Stellar Wallet</h1>
+      <nav>
+        <ul class="flex space-x-4">
+          <li><a href="#" class="hover:underline">Home</a></li>
+          <li><a href="#" class="hover:underline">About</a></li>
+          <li><a href="#" class="hover:underline">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto py-8">
+    <section class="text-center">
+      <h2 class="text-4xl font-bold mb-4">Welcome to LumenLock</h2>
+      <p class="text-lg mb-8">An easy to use custodial Wallet.</p>
+      <p class="text-lg mb-8">Manage your Stellar lumens securely and conveniently.</p>
+      <a href="#" class="btn btn-primary">Get Started</a>
+    </section>
+  </main>
+{% endblock main %}
