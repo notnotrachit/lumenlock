@@ -82,5 +82,6 @@ def dashboard(request):
     context = {
         'wallet_exists': wallet_exists,
         'balance': balance,
+        'public_key': wallet.public_key
     }
     return render(request, 'dashboard.html', context)

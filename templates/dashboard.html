@@ -4,6 +4,7 @@
     <h2 class="text-4xl font-bold mb-4">Dashboard</h2>
     {% if wallet_exists %}
     <p class="text-lg mb-2">Your balance: {{ balance }} lumens</p>
+    <p class="text-lg mb-2">Your account address: {{ public_key }}</p>
     <button class="btn btn-primary" onclick="sendModal.showModal()">
       Send Tokens
     </button>
