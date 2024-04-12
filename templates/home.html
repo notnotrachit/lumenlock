@@ -1,15 +1,14 @@
-{% extends 'base.html' %}
-{% block main %}
+{% extends 'base.html' %} {% block main %}
 
-
-  <main class="container mx-auto py-8">
-    <section class="text-center">
-      <h2 class="text-4xl font-bold mb-4">Welcome to LumenLock</h2>
-      <p class="text-lg mb-8">An easy to use custodial Wallet.</p>
-      <p class="text-lg mb-8">Manage your Stellar lumens securely and conveniently.</p>
-      <a href="/dashboard" class="btn btn-primary">Get Started</a>
-    </section>
-  </main>
-
+<main class="container mx-auto py-8 font-[orbitron] backdrop-blur mt-16 rounded-xl border border-[#FFE7A3]">
+  <section class="text-center">
+    <h2 class="text-4xl font-bold mb-4">Welcome to LumenLock</h2>
+    <p class="text-lg mb-8">An easy to use custodial Wallet.</p>
+    <p class="text-lg mb-8">
+      Manage your Stellar lumens securely and conveniently.
+    </p>
+    <a href="/dashboard" class="btn btn-neutral">Get Started</a>
+  </section>
+</main>
 
 {% endblock main %}

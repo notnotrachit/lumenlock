@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="luxury">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -18,9 +18,17 @@
       type="text/css"
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
   </head>
   <body>
-    <header class="bg-blue-500 text-white py-4">
+    <header class="bg-neutral text-neutral-content py-4 font-[orbitron] z-10">
       <div class="container mx-auto flex justify-between items-center">
         <h1 class="text-2xl font-bold">LumenLock</h1>
         <nav>
@@ -28,13 +36,55 @@
             <li><a href="#" class="hover:underline">Home</a></li>
             <li><a href="#" class="hover:underline">About</a></li>
             <li><a href="#" class="hover:underline">Contact</a></li>
+            {% if request.user.is_authenticated %}
+            <li>
+              <form action="{% url 'account_logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="hover:underline">Logout</button>
+              </form>
+            </li>
+            {% else %}
+            <li>
+              <a href="{% url 'account_login' %}" class="hover:underline"
+                >Login</a
+              >
+            </li>
+            <li>
+              <a href="{% url 'account_signup' %}" class="hover:underline"
+                >Register</a
+              >
+            </li>
+            {% endif %} {% comment %} Logout {% endcomment %}
           </ul>
         </nav>
       </div>
     </header>
     <script src="" async defer></script>
     {% block main %} {% endblock %}
-    
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
+    <div id="bgw" class="absolute top-0 left-0 w-full h-full -z-[999]"></div>
+
+    <script>
+      VANTA.NET({
+        el: "#bgw",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 1.0,
+        scaleMobile: 1.0,
+        color: 0xffe7a3,
+        backgroundColor: 0x0,
+        points: 12.0,
+        maxDistance: 25.0,
+        spacing: 18.0,
+        showDots: false,
+      });
+    </script>
   </body>
 </html>
