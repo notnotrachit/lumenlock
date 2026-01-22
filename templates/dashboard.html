@@ -35,7 +35,11 @@
     </div>
     <div class="modal-body">
       <!-- Form to create a wallet with password -->
-      <form method="POST" action="{% url 'create_wallet' %}">
+      <form
+        method="POST"
+        action="{% url 'create_wallet' %}"
+        id="createWalletForm"
+      >
         {% csrf_token %}
         <div class="form-control">
           <label class="label">
@@ -50,7 +54,11 @@
           />
         </div>
         <div class="modal-footer flex justify-center my-2">
-          <button type="submit" class="btn btn-primary bg-white">
+          <button
+            type="submit"
+            class="btn btn-primary bg-white"
+            id="createWalletBtn"
+          >
             Create Wallet
           </button>
         </div>
@@ -208,6 +216,15 @@
       .catch((error) => {
         console.error("There was a problem with the fetch operation:", error);
       });
+  }
+  const createWalletForm = document.getElementById("createWalletForm");
+  const createWalletBtn = document.getElementById("createWalletBtn");
+
+  if (createWalletForm && createWalletBtn) {
+    createWalletForm.addEventListener("submit", function () {
+      createWalletBtn.disabled = true;
+      createWalletBtn.innerText = "Creating Wallet...";
+    });
   }
 </script>
 
