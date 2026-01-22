@@ -9,6 +9,7 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 import json
+from django.conf import settings
 
 def home(request):
     return render(request, 'home.html')
@@ -28,8 +29,10 @@ def create_wallet(request):
         public_key=keypair.public_key,
         secret_seed=encrypted_secret_seed
     )
-    url = "https://friendbot.stellar.org"
-    response = requests.get(url, params={"addr": keypair.public_key})
+    response = requests.get(
+        settings.STELLAR_FRIENDBOT_URL,
+        params={"addr": keypair.public_key}
+    )
     return redirect('dashboard')
 
 
@@ -38,7 +41,7 @@ def check_balance(request):
     if not public_key:
         wallet = Wallet.objects.filter(user=request.user)[0]
         public_key = wallet.public_key
-    server = Server("https://horizon-testnet.stellar.org")
+    server = Server(settings.STELLAR_HORIZON_URL)
     account = server.accounts().account_id(public_key).call()
     return JsonResponse({'balance': account['balances'][0]['balance']})
 
@@ -51,12 +54,12 @@ def send_money(request):
         amount = data.get('amount')
         encryption_key = data.get('transaction_password')
         wallet = Wallet.objects.filter(user=request.user)[0]
-        server = Server("https://horizon-testnet.stellar.org")
+        server = Server(settings.STELLAR_HORIZON_URL)
         source_keypair = Keypair.from_secret(cryptocode.decrypt(wallet.secret_seed, encryption_key))
         destination_account = server.load_account(destination_public_key)
         transaction = TransactionBuilder(
             source_account=server.load_account(source_keypair.public_key),
-            network_passphrase=Network.TESTNET_NETWORK_PASSPHRASE,
+            network_passphrase=settings.STELLAR_NETWORK_PASSPHRASE,
             base_fee=100
         ).append_payment_op(
             destination=destination_public_key,
@@ -76,7 +79,7 @@ def dashboard(request):
     if not wallet_exists:
         return render(request, 'dashboard.html', {'wallet_exists': wallet_exists})
     wallet = Wallet.objects.filter(user=request.user)[0]
-    server = Server("https://horizon-testnet.stellar.org")
+    server = Server(settings.STELLAR_HORIZON_URL)
     account = server.accounts().account_id(wallet.public_key).call()
     balance = account['balances'][0]['balance']
     context = {
