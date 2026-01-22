@@ -135,3 +135,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'dashboard'
+
+# Stellar configuration
+STELLAR_FRIENDBOT_URL = "https://friendbot.stellar.org"
+STELLAR_HORIZON_URL = "https://horizon-testnet.stellar.org"
+STELLAR_NETWORK_PASSPHRASE = "Test SDF Network ; September 2015"
