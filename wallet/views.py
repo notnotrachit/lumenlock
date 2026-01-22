@@ -4,7 +4,6 @@ from stellar_sdk import Asset, Server, Keypair, TransactionBuilder, Network
 from .models import Wallet
 import cryptocode
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
 import requests
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
