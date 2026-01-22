@@ -18,8 +18,8 @@ def create_wallet(request):
     if Wallet.objects.filter(user=request.user).exists():
         return redirect('dashboard')
     keypair = Keypair.random()
-    print("Public Key: " + keypair.public_key)
-    print("Secret Seed: " + keypair.secret)
+    # Removed insecure logging of public key and secret seed
+    print("Wallet keypair generated successfully")
     encryption_key = request.POST.get('password')
     encrypted_secret_seed = keypair.secret
     encrypted_secret_seed = cryptocode.encrypt(keypair.secret, encryption_key)
