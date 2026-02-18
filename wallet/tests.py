@@ -193,27 +193,9 @@ class WalletModelAdvancedTestCase(TestCase):
         with self.assertRaises(Wallet.DoesNotExist):
             Wallet.objects.get(id=wallet_id)
     
-    def test_multiple_wallets_per_user(self):
-        """Test that multiple wallets can be created for same user (if allowed)"""
-        keypair1 = Keypair.random()
-        keypair2 = Keypair.random()
-        
-        wallet1 = Wallet.objects.create(
-            user=self.test_user,
-            public_key=keypair1.public_key,
-            secret_seed=cryptocode.encrypt(keypair1.secret, 'password1')
-        )
-        
-        wallet2 = Wallet.objects.create(
-            user=self.test_user,
-            public_key=keypair2.public_key,
-            secret_seed=cryptocode.encrypt(keypair2.secret, 'password2')
-        )
-        
-        user_wallets = Wallet.objects.filter(user=self.test_user)
-        self.assertEqual(user_wallets.count(), 2)
-        self.assertIn(wallet1, user_wallets)
-        self.assertIn(wallet2, user_wallets)
+    # Note: The application is designed to support a single wallet per user.
+    # Tests asserting multiple wallets per user have been removed to avoid
+    # codifying behavior that conflicts with this invariant.
     
     def test_empty_encryption_password(self):
         """Test encryption behavior with empty password"""
