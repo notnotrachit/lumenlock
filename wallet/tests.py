@@ -92,23 +92,26 @@ class WalletModelTestCase(TestCase):
         self.assertEqual(str(wallet), expected_str)
     
     def test_wallet_fields_validation(self):
-        """Test that all required fields are properly set"""
+        """Test that all required fields and schema constraints are properly set"""
         wallet = Wallet.objects.create(
             user=self.test_user,
             public_key=self.test_keypair.public_key,
             secret_seed=self.encrypted_secret
         )
-        
-        # Test field types and constraints
+
+        # Test field types and basic constraints
         self.assertIsInstance(wallet.public_key, str)
-        self.assertIsInstance(wallet.secret_seed, str)
         self.assertLessEqual(len(wallet.public_key), 56)
-        # Note: Encrypted secret_seed is longer than 56 chars
-        # This indicates the model field length needs to be increased
-        self.assertGreater(len(wallet.secret_seed), 56)
+
+        self.assertIsInstance(wallet.secret_seed, str)
         self.assertIsNotNone(wallet.secret_seed)
 
+        # Validate the model schema: secret_seed field length should be 200
+        secret_seed_field = Wallet._meta.get_field("secret_seed")
+        self.assertEqual(secret_seed_field.max_length, 200)
 
+        # Ensure the stored encrypted value fits within the configured max_length
+        self.assertLessEqual(len(wallet.secret_seed), secret_seed_field.max_length)
 class EncryptionLogicTestCase(TestCase):
     """Test cases for the encryption logic used with Wallet model"""
     
