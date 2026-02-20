@@ -22,7 +22,7 @@ def create_wallet(request):
     encrypted_secret_seed = keypair.secret
     encrypted_secret_seed = cryptocode.encrypt(keypair.secret, encryption_key)
     wallet = Wallet.objects.create(
-        user=User.objects.first(),
+        user=request.user,
         public_key=keypair.public_key,
         secret_seed=encrypted_secret_seed
     )
