@@ -69,6 +69,38 @@ def send_money(request):
 
 
 @login_required
+def transaction_history(request):
+    wallet = Wallet.objects.filter(user=request.user).first()
+    if not wallet:
+        return JsonResponse({'error': 'No wallet found'}, status=404)
+
+    server = Server("https://horizon-testnet.stellar.org")
+    try:
+        transactions = (
+            server.transactions()
+            .for_account(wallet.public_key)
+            .order(desc=True)
+            .limit(10)
+            .call()
+        )
+        records = transactions.get('_embedded', {}).get('records', [])
+        history = []
+        for tx in records:
+            history.append({
+                'id': tx.get('id', ''),
+                'created_at': tx.get('created_at', ''),
+                'source_account': tx.get('source_account', ''),
+                'fee_charged': tx.get('fee_charged', ''),
+                'operation_count': tx.get('operation_count', 0),
+                'memo': tx.get('memo', '—'),
+                'successful': tx.get('successful', False),
+            })
+        return JsonResponse({'transactions': history})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
 def dashboard(request):
     wallet_exists = Wallet.objects.filter(user=request.user).exists()
     if not wallet_exists:
