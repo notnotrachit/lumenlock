@@ -96,8 +96,8 @@ def transaction_history(request):
                 'successful': tx.get('successful', False),
             })
         return JsonResponse({'transactions': history})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    except Exception:
+        return JsonResponse({'error': 'Failed to fetch transaction history.'}, status=500)
 
 
 @login_required
