@@ -22,7 +22,7 @@ def create_wallet(request):
     encrypted_secret_seed = keypair.secret
     encrypted_secret_seed = cryptocode.encrypt(keypair.secret, encryption_key)
     wallet = Wallet.objects.create(
-        user=User.objects.first(),
+        user=request.user,
         public_key=keypair.public_key,
         secret_seed=encrypted_secret_seed
     )
@@ -66,6 +66,38 @@ def send_money(request):
         return JsonResponse({'message': 'Payment sent successfully', 'status': 'success'})
     else:
         pass
+
+
+@login_required
+def transaction_history(request):
+    wallet = Wallet.objects.filter(user=request.user).first()
+    if not wallet:
+        return JsonResponse({'error': 'No wallet found'}, status=404)
+
+    server = Server("https://horizon-testnet.stellar.org")
+    try:
+        transactions = (
+            server.transactions()
+            .for_account(wallet.public_key)
+            .order(desc=True)
+            .limit(10)
+            .call()
+        )
+        records = transactions.get('_embedded', {}).get('records', [])
+        history = []
+        for tx in records:
+            history.append({
+                'id': tx.get('id', ''),
+                'created_at': tx.get('created_at', ''),
+                'source_account': tx.get('source_account', ''),
+                'fee_charged': tx.get('fee_charged', ''),
+                'operation_count': tx.get('operation_count', 0),
+                'memo': tx.get('memo', '—'),
+                'successful': tx.get('successful', False),
+            })
+        return JsonResponse({'transactions': history})
+    except Exception:
+        return JsonResponse({'error': 'Failed to fetch transaction history.'}, status=500)
 
 
 @login_required
