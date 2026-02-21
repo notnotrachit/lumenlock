@@ -29,3 +29,4 @@ toml==0.10.2
 typing_extensions==4.10.0
 urllib3==2.2.1
 xdrlib3==0.1.1
+django-ratelimit==4.1.0
