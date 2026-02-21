@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 import json
 import logging
-from ratelimit.decorators import ratelimit
+from django_ratelimit.decorators import ratelimit
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from requests.exceptions import RequestException, Timeout
@@ -64,6 +64,7 @@ def create_wallet(request):
     return redirect('dashboard')
 
 
+@csrf_exempt
 @ratelimit(key='user', rate='10/m', method='POST', block=True)
 @login_required
 def check_balance(request):
@@ -97,6 +98,7 @@ def check_balance(request):
         return JsonResponse({'error': 'Failed to check balance'}, status=500)
 
 
+@csrf_exempt
 @ratelimit(key='user', rate='5/m', method='POST', block=True)
 @login_required
 def send_money(request):

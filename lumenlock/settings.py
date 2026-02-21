@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'wallet',
     "widget_tweaks",
-    'ratelimit',
+    'slippers',
 ]
 
 MIDDLEWARE = [
