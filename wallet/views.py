@@ -64,7 +64,6 @@ def create_wallet(request):
     return redirect('dashboard')
 
 
-@csrf_exempt
 @ratelimit(key='user', rate='10/m', method='POST', block=True)
 @login_required
 def check_balance(request):
@@ -98,7 +97,6 @@ def check_balance(request):
         return JsonResponse({'error': 'Failed to check balance'}, status=500)
 
 
-@csrf_exempt
 @ratelimit(key='user', rate='5/m', method='POST', block=True)
 @login_required
 def send_money(request):
